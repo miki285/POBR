@@ -21,8 +21,6 @@ public:
 	void process();
 	
 };
-cv::Mat filterMinMaxMed(cv::Mat image, int whatFilter);
-cv::Mat findConturs(cv::Mat image);
-cv::Mat floodFill(cv::Mat image, unsigned int startX, unsigned int startY, cv::Scalar color);
+
 #endif // !POST_PROCESSING_H
 #pragma once
