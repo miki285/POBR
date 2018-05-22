@@ -8,6 +8,7 @@
 #include "ihls.h"
 #include "nhs.h"
 #include "postprocessing.h"
+#include "utils.h"
 
 #define bright 50
 #define cont 100
@@ -310,20 +311,35 @@ std::vector<Ksztalt> znajdzStrzalki(const cv::String &nazwaZdjecia){
 
 int main(int, char *[]) {
     std::cout << "Start ..." << std::endl;
-    cv::Mat image = cv::imread("ogr_70_1.jpg");
+    cv::Mat image = cv::imread("czer.png");
 	cv::Mat_<cv::Vec3b> _I = image;
+
+	Postprocessing post = Postprocessing(image);
+	post.process();
 
 	cv::Mat image_ihls = convert_rgb_to_ihls(image);
 	cv::Mat image_nhs = convert_ihls_to_nhs(image_ihls);
-	//cv::Mat filteredMed = filterMed(image_nhs);
-	cv::Mat filteredMin = filterMinMaxMed(image_nhs, 0);
-	cv::Mat filteredMax = filterMinMaxMed(filteredMin, 1);
+	//cv::Mat filteredMin = filterMinMaxMed(image_nhs, 0);
+	//cv::Mat filteredMax = filterMinMaxMed(filteredMin, 1);
 	//cv::Mat filteredMed2 = filterMinMaxMed(filteredMin, 2);
-	cv::imwrite("binary.jpg", filteredMax);
-	cv::Mat conturs = findConturs(filteredMax);
-	cv::imshow("conturs", conturs);
-	cv::imwrite("conturs.jpg", conturs);
+	cv::Mat RGB_image = copyImageBinaryToRGB(image_nhs);
+
+	for (int startX = 0; startX < image_nhs.rows; ++startX) {
+		for (int startY = 0; startY < image_nhs.cols; ++startY)
+		{
+			if (image_nhs.at<uchar>(startX, startY) == 255) {
+				floodFill(image_nhs, startX, startY, cv::Scalar(100, 100, 100));
+				break;
+			}
+		}
+	}
+	cv::imshow("conturs", RGB_image);
 	cv::waitKey(-1);
+
+	cv::imwrite("flooded.jpg", image);
+	cv::Mat conturs = findConturs(image);
+	cv::imshow("conturs", conturs);
+
 	znajdzStrzalki("strzalki_1.dib");
 
 	znajdzStrzalki("strzalki_2.dib");
@@ -332,7 +348,6 @@ int main(int, char *[]) {
 
 	cv::Mat grey;
 	cv::imshow("elipsa", image);
-	std::cout << _I(150,150);
 	cv::waitKey(-1);
 	int rowsHalf = image.rows/2;
 	int colsHalf = image.cols/2;
