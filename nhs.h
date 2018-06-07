@@ -9,6 +9,12 @@
 //#define R_SAT_MIN 30
 #define R_SAT_MIN 30
 
-cv::Mat convert_ihls_to_nhs(cv::Mat ihls_image);
+
+#define BL_LUM_MAX 100
+#define BL_SAT_MAX 50
+
+
+
+cv::Mat convert_ihls_to_nhs(cv::Mat ihls_image,  int typeFiltering);
 
 #endif /* NHS_H_ */
